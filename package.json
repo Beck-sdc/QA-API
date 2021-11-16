@@ -1,0 +1,22 @@
+{
+  "name": "atelier_qa_api",
+  "version": "1.0.0",
+  "description": "Database api to handle any queation and answer requests for Atelier",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Beck-sdc/QA-API.git"
+  },
+  "author": "Edwin Baranov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Beck-sdc/QA-API/issues"
+  },
+  "homepage": "https://github.com/Beck-sdc/QA-API#readme",
+  "dependencies": {
+    "mysql": "^2.18.1"
+  }
+}
