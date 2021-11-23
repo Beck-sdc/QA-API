@@ -4,6 +4,7 @@
   "description": "Database api to handle any queation and answer requests for Atelier",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon ./server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +18,8 @@
   },
   "homepage": "https://github.com/Beck-sdc/QA-API#readme",
   "dependencies": {
-    "mysql": "^2.18.1"
+    "express": "^4.17.1",
+    "nodemon": "^2.0.15",
+    "pg": "^8.7.1"
   }
 }

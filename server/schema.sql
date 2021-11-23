@@ -1,54 +1,33 @@
-CREATE TABLE `Question` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `body` varchar(255),
-  `date_id` int,
-  `name_id` int,
-  `helpfulness` int,
-  `reported` boolean,
-  `product_id` int
+CREATE TABLE "questions" (
+  "id" serial PRIMARY KEY,
+  "product_id" int NOT NULL,
+  "body" varchar(1000) NOT NULL,
+  "date_written" bigint,
+  "asker_name" varchar(60) NOT NULL,
+  "email" varchar NOT NULL,
+  "reported" boolean DEFAULT false,
+  "helpful" int DEFAULT 0
 );
 
-CREATE TABLE `Answer` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `body` varchar(255),
-  `date_id` int,
-  `name_id` int,
-  `helpfulness` int,
-  `reported` boolean,
-  `question_id` int
+CREATE TABLE "answers" (
+  "id" serial PRIMARY KEY,
+  "question_id" int NOT NULL,
+  "body" varchar(1000) NOT NULL,
+  "date_written" bigint,
+  "answerer_name" varchar(60) NOT NULL,
+  "answerer_email" varchar NOT NULL,
+  "reported" boolean DEFAULT false,
+  "helpful" int DEFAULT 0
 );
 
-CREATE TABLE `Names` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `name` varchar(255)
+CREATE TABLE "answer_photos" (
+  "id" serial PRIMARY KEY,
+  "answer_id" int NOT NULL,
+  "url" varchar NOT NULL
 );
 
-CREATE TABLE `Dates` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `date` varchar(255)
-);
+ALTER TABLE "answers" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
 
-CREATE TABLE `Photos` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `url` varchar(255)
-);
+ALTER TABLE "answer_photos" ADD FOREIGN KEY ("answer_id") REFERENCES "answers" ("id");
 
-CREATE TABLE `Answer_Photos` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `answer_id` int,
-  `photo_id` int
-);
-
-ALTER TABLE `Question` ADD FOREIGN KEY (`date_id`) REFERENCES `Dates` (`id`);
-
-ALTER TABLE `Question` ADD FOREIGN KEY (`name_id`) REFERENCES `Names` (`id`);
-
-ALTER TABLE `Answer` ADD FOREIGN KEY (`date_id`) REFERENCES `Dates` (`id`);
-
-ALTER TABLE `Answer` ADD FOREIGN KEY (`name_id`) REFERENCES `Names` (`id`);
-
-ALTER TABLE `Answer` ADD FOREIGN KEY (`question_id`) REFERENCES `Question` (`id`);
-
-ALTER TABLE `Answer_Photos` ADD FOREIGN KEY (`answer_id`) REFERENCES `Answer` (`id`);
-
-ALTER TABLE `Answer_Photos` ADD FOREIGN KEY (`photo_id`) REFERENCES `Photos` (`id`);
+-- select to_char(date(to_timestamp(1595884714409 / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"');
