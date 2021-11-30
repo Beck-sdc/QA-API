@@ -52,6 +52,7 @@ ALTER TABLE "answer_photos" ADD FOREIGN KEY ("answer_id") REFERENCES "answers" (
 
 CREATE INDEX ON "questions" ("product_id", "question_helpfulness" desc) WHERE "reported" = false;
 CREATE INDEX ON "answers" ("question_id", "helpfulness" desc) WHERE "reported" = false;
+CREATE INDEX ON "answer_photos" ("answer_id");
 
 -- select to_char(date(to_timestamp(1595884714409 / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"');
 -- select extract(epoch from now()) * 1000

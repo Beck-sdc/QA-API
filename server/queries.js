@@ -23,10 +23,18 @@ module.exports = {
             json_build_object(
               'id', answer_id,
               'body', body,
-              'date', date,
+              'date', TO_CHAR(date(to_timestamp(question_date / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
               'answerer_name', answerer_name,
               'helpfulness', helpfulness,
-              'photos', 'test'
+              'photos', (SELECT
+                COALESCE(
+                  json_agg (
+                    t.url
+                  ), '[]'::json
+                ) from (
+                  SELECT answer_photos.url FROM answer_photos WHERE answer_photos.answer_id = answers.answer_id
+                ) AS T
+              )
             )
           ) AS answers FROM answers WHERE answers.question_id = questions.question_id AND reported = false
         )
