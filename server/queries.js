@@ -44,10 +44,24 @@ module.exports = {
       });
   },
 
-  getAnswers: (question_id = '', page = 1, count = 5, callback) => {
-    pool.query(`select answer_id, body, TO_CHAR(date(to_timestamp(date / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') date, answerer_name, helpfulness FROM answers WHERE question_id = ${question_id} and reported = false LIMIT ${count} offset ${(page - 1) * count}`,
+  getAnswers: (question_id, page = 1, count = 5, callback) => {
+    pool.query(
+      `SELECT
+        answer_id,
+        body,
+        TO_CHAR(date(to_timestamp(date / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') date,
+        answerer_name,
+        helpfulness
+      FROM answers WHERE question_id = $1 and reported = false LIMIT $2 offset ($3 - 1) * $2`,
+      [question_id, count, page],
       (err, results) => {
-        err ? callback(err) : callback(err, results.rows);
+        err ? callback(err) : callback(err,
+          {
+            question: question_id,
+            page: page,
+            count: count,
+            results: results.rows
+          });
       })
   },
 
@@ -81,3 +95,36 @@ module.exports = {
     pool.query(`update answers set reported = true where answer_id = ${answer_id}`, callback);
   }
 }
+
+// `SELECT
+//         answer_id,
+//         body,
+//         TO_CHAR(date(to_timestamp(date / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') date,
+//         answerer_name,
+//         helpfulness
+//       FROM answers WHERE question_id = $1 and reported = false LIMIT $2 offset ($3 - 1) * $2`,
+//       [question_id, count, page],
+
+/*
+select row_to_json(rowset,true) movies_list from (
+  select
+    film.film_id,
+    title,
+    description,
+    release_year,
+    language.name as language,
+    rating,
+    (select
+      json_agg(
+        row_to_json(
+          cast_list.*,
+          true
+        )
+      ) from (select
+        actor.first_name,
+        actor.last_name
+      from film_actor join actor on actor.actor_id=film_actor.actor_id where film_actor.film_id=film.film_id
+    ) cast_list
+  ) as film_cast from film join language on film.language_id=language.language_id
+) order by film.film_id) rowset;
+*/
