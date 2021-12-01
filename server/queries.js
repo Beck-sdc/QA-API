@@ -46,22 +46,41 @@ module.exports = {
 
   getAnswers: (question_id, page = 1, count = 5, callback) => {
     pool.query(
-      `SELECT
-        answer_id,
-        body,
-        TO_CHAR(date(to_timestamp(date / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') date,
-        answerer_name,
-        helpfulness
-      FROM answers WHERE question_id = $1 and reported = false LIMIT $2 offset ($3 - 1) * $2`,
+      `SELECT json_build_object(
+        'question', '${question_id}',
+        'page', ${page},
+        'count', ${count},
+        'results',  (SELECT COALESCE (arrayA.array_to_json, '[]'::json) FROM
+                      (SELECT array_to_json(array_agg(row_to_json(answer))) FROM
+                        (SELECT
+                          answer_id,
+                          body,
+                          date,
+                          answerer_name,
+                          helpfulness,
+                          (
+                            SELECT COALESCE (jsonAP.array_to_json, '[]'::json) FROM
+                            (
+                              SELECT array_to_json(array_agg(arrayAP.row_to_json)) FROM
+                              (
+                                SELECT row_to_json(AP) FROM
+                                (
+                                  SELECT id, url FROM answer_photos where answer_id = answers.answer_id
+                                ) AP
+
+                              ) arrayAP
+
+                            ) jsonAP
+
+                          ) AS photos FROM
+                            answers where question_id = $1 and reported = false LIMIT $2 OFFSET ($3 - 1) * $2
+                        ) answer
+                      ) arrayA
+                    )
+      )`,
       [question_id, count, page],
       (err, results) => {
-        err ? callback(err) : callback(err,
-          {
-            question: question_id,
-            page: page,
-            count: count,
-            results: results.rows
-          });
+        err ? callback(err) : callback(err, results.rows[0].json_build_object);
       })
   },
 
