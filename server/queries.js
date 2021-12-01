@@ -91,7 +91,7 @@ module.exports = {
       })
   },
 
-  postAnswer: (body = '', name = '', email = '', photos = '', question_id = '', callback) => {
+  postAnswer: (body, name, email, photos, question_id, callback) => {
     pool.query('INSERT INTO answers (body, answerer_name, answerer_email, question_id) VALUES ($1, $2, $3, $4)', [body, name, email, question_id],
       (err, results) => {
         err ? callback(err) : callback(err, results.rows);
@@ -99,18 +99,18 @@ module.exports = {
   },
 
   markQuestionHelpful: (question_id, callback) => {
-    pool.query(`update questions set question_helpfulness = question_helpfulness + 1 where question_id = ${question_id}`, callback);
+    pool.query(`UPDATE questions SET question_helpfulness = question_helpfulness + 1 WHERE question_id = $1`, [question_id], callback);
   },
 
   markQuestionReport: (question_id, callback) => {
-    pool.query(`update questions set reported = true where question_id = ${question_id}`, callback);
+    pool.query(`UPDATE questions SET reported = true WHERE question_id = $1`, [question_id], callback);
   },
 
   markAnswerHelpful: (answer_id, callback) => {
-    pool.query(`update answers set helpfulness = helpfulness + 1 where answer_id = ${answer_id}`, callback);
+    pool.query(`UPDATE answers SET helpfulness = helpfulness + 1 WHERE answer_id = $1`, [answer_id], callback);
   },
 
   markAnswerReport: (answer_id, callback) => {
-    pool.query(`update answers set reported = true where answer_id = ${answer_id}`, callback);
+    pool.query(`UPDATE answers SET reported = true WHERE answer_id = $1`, [answer_id], callback);
   }
 }
