@@ -10,7 +10,7 @@ CREATE TABLE "answers" (
   "id" serial PRIMARY KEY,
   "question_id" int NOT NULL,
   "body" varchar(1000) NOT NULL,
-  "date_written" bigint NOT NULL DEFAULT (extract(epoch from now()) * 1000),
+  "date_written" bigint NOT NULL,
   "answerer_name" varchar(60) NOT NULL,
   "answerer_email" varchar,
   "reported" boolean DEFAULT false,
@@ -22,7 +22,7 @@ CREATE TABLE "questions" (
   "id" serial PRIMARY KEY,
   "product_id" int NOT NULL,
   "body" varchar(1000) NOT NULL,
-  "date_written" bigint NOT NULL DEFAULT (extract(epoch from now()) * 1000),
+  "date_written" bigint NOT NULL,
   "asker_name" varchar(60) NOT NULL,
   "email" varchar NOT NULL,
   "reported" boolean NOT NULL DEFAULT false,
@@ -36,6 +36,11 @@ COPY "answer_photos" FROM '/home/edwin/hackreactor/assignments/SDC/QA-API/Raw Da
 SELECT setval('questions_id_seq', (SELECT MAX("id") from "questions"));
 SELECT setval('answers_id_seq', (SELECT MAX("id") from "answers"));
 SELECT setval('answer_photos_id_seq', (SELECT MAX("id") from "answer_photos"));
+
+ALTER TABLE "answers" ALTER COLUMN "date_written" TYPE DATE USING TO_TIMESTAMP("date_written" / 1000);
+ALTER TABLE "questions" ALTER COLUMN "date_written" TYPE DATE USING TO_TIMESTAMP("date_written" / 1000);
+ALTER TABLE "answers" ALTER COLUMN "date_written" SET DEFAULT NOW()::TIMESTAMP;
+ALTER TABLE "questions" ALTER COLUMN "date_written" SET DEFAULT NOW()::TIMESTAMP;
 
 ALTER TABLE "questions" RENAME COLUMN "id" TO "question_id";
 ALTER TABLE "questions" RENAME COLUMN "body" TO "question_body";
@@ -55,4 +60,4 @@ CREATE INDEX ON "answers" ("question_id", "helpfulness" desc) WHERE "reported" =
 CREATE INDEX ON "answer_photos" ("answer_id");
 
 -- select to_char(date(to_timestamp(1595884714409 / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"');
--- select extract(epoch from now()) * 1000
+-- DEFAULT (extract(epoch from now()) * 1000)

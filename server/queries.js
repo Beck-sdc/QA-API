@@ -13,7 +13,7 @@ module.exports = {
       `SELECT
         question_id,
         question_body,
-        TO_CHAR(date(to_timestamp(question_date / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') question_date,
+        TO_CHAR(question_date, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as question_date,
         asker_name,
         question_helpfulness,
         reported,
@@ -23,7 +23,7 @@ module.exports = {
             json_build_object(
               'id', answer_id,
               'body', body,
-              'date', TO_CHAR(date(to_timestamp(question_date / 1000)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+              'date', TO_CHAR(date, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
               'answerer_name', answerer_name,
               'helpfulness', helpfulness,
               'photos', (SELECT
@@ -55,7 +55,7 @@ module.exports = {
                         (SELECT
                           answer_id,
                           body,
-                          date,
+                          TO_CHAR(date, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as date,
                           answerer_name,
                           helpfulness,
                           (
